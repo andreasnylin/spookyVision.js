@@ -1,7 +1,17 @@
 <html>
 <title>spookyVision.js</title>
 <style>
-body {	
+
+body,
+html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	font: 20px sans-serif;
+
 	-webkit-background-size: 50px 50px;
 	-moz-background-size: 50px 50px;
 	background-size: 50px 50px;
@@ -27,10 +37,26 @@ body {
 	background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 25%, transparent 25%,
 						transparent 50%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .2) 75%,
 						transparent 75%, transparent);
-	}
+}
+
+a {
+	color: blue;
+}
+
+.center {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
 
 </style>
 <body>
+
+<div class="center">
+	<a href="">Reload page</a>
+</div>
+
 <script src="spookyvision.js"></script>
 <script>
 spookyVision();

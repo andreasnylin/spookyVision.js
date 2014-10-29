@@ -1,22 +1,26 @@
 /*
- * spookyVision.js - v0.3 - 2013-10-25
+ * spookyVision.js - v0.4 - 2014-10-29
  * Created by Andreas Nylin
  * andreas.nylin@gmail.com / @andreasnylin / andreasnylin.com
  */
-var spookyVision = (function() {
-	var doc = document,
+var spookyVision = (function(win) {
+	var doc = win.document,
 		body = doc.body,
 		head = doc.getElementsByTagName('head')[0],
-		windowHeight = window.innerHeight || document.documentElement.clientHeight,
-		barbSize = windowHeight * 0.15;
+		winHeight = win.innerHeight || doc.documentElement.clientHeight,
+		barbSize = winHeight * 0.15;
 
     function createStyle() {
 		var zoominanim = ' {p}animation: zoomin 2s; ',
 			rotateanim = '{p}animation: rotate 2s infinite;',
 			zoominkf = ' @{p}keyframes zoomin { 0% { {p}transform: scale(0); } 100% { {p}transform: scale(1); } } \n',
 			rotatekf = ' @{p}keyframes rotate { 0% { {p}transform: rotate(0deg); } 100% { {p}transform: rotate(360deg); } } \n',
+			flyanim = '.spkvsn-fly { {p}transform: scale(10); {p}transition: all 1s ease; {p}transform-origin: top left; } \n' +
+				'.spkvsn-fly.spkvsn-b2 { {p}transform-origin: top right; } \n' +
+				'.spkvsn-fly.spkvsn-b3 { {p}transform-origin: bottom left; } \n' +
+				'.spkvsn-fly.spkvsn-b4 { {p}transform-origin: bottom right; } \n',
 			css = '.spkvsn-b {\n' +
-			'position:absolute;width:' + barbSize + 'px;width:' + barbSize + 'px;' +
+			'position:absolute;width:' + barbSize + 'px;height:' + barbSize + 'px;' +
 			prefixAll(zoominanim) +
 			'\n}\n' +
 			'.spkvsn-b:hover {\n' +
@@ -24,14 +28,15 @@ var spookyVision = (function() {
 			'\n}\n' +
 			'.spkvsn-b1 {top:10px;left:10px} .spkvsn-b2{top:10px;right:10px} .spkvsn-b3{bottom:10px;left:10px} .spkvsn-b4{bottom:10px;right:10px}' +
 			prefixAll(zoominkf) +
-			prefixAll(rotatekf),
-			style = document.createElement('style');
+			prefixAll(rotatekf) +
+			prefixAll(flyanim),
+			style = doc.createElement('style');
 
 		style.type = 'text/css';
 		if (style.styleSheet){
 			style.styleSheet.cssText = css;
 		} else {
-			style.appendChild(document.createTextNode(css));
+			style.appendChild(doc.createTextNode(css));
 		}
 
 		head.appendChild(style);
@@ -50,15 +55,12 @@ var spookyVision = (function() {
 	}
 
 	function scaleText() {
-		var spooky = document.getElementById('spkvsn-l'),
-			vision = document.getElementById('spkvsn-r'),
+		var spooky = doc.getElementById('spkvsn-l'),
+			vision = doc.getElementById('spkvsn-r'),
 			fontSize = 10,
-			textHeight = windowHeight - (barbSize * 2) - 100;
-
+			textHeight = winHeight - (barbSize * 2) - 100;
 
 		spooky.style.fontSize = '10px';
-
-		console.log(windowHeight)
 
 		do {
 			spooky.style.fontSize = (++fontSize) + 'px';
@@ -88,10 +90,45 @@ var spookyVision = (function() {
 	    head.appendChild(wf);
 	}
 
+	function setEvents() {
+		var a = doc.getElementsByTagName('a'),
+			l = a.length;
+
+		while(l--) {
+			addEvent(a[l], 'click', linkClickHandler);
+		}
+	}
+
+	function addEvent(element, eventname, handler) {
+		if(element.addEventListener) {
+			element.addEventListener(eventname, handler, false);
+		}
+		else if(element.attachEvent) {
+			element.attachEvent('on' + eventname, handler);
+		}
+		else {
+			element['on' + eventname] = handler;
+		}
+	}
+
+	function linkClickHandler(e) {
+		e.preventDefault();
+
+		var a = this,
+			n = Math.floor((Math.random() * 4) + 1);
+		
+		doc.getElementsByClassName('spkvsn-b' + n)[0].className += ' spkvsn-fly';
+
+		win.setTimeout(function() {
+			location.href = a.href;
+		}, 1000);
+	}
+
 	return function() {
 		loadFont();
 		createStyle();
 		createElements();
 		scaleText();
+		setEvents();
 	};
-})();
+})(window);
